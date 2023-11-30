@@ -55,8 +55,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'scine_art'
-copyright = '2022, ETH Zurich, Laboratory for Physical Chemistry, Reiher Group'
-author = 'Reiher Group'
+copyright = 'ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group'
+author = 'ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

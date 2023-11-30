@@ -38,7 +38,7 @@ with open('scine_art/_version.py') as f:
 setup(
     name="scine_art",
     version=__version__,
-    author="ETH Zurich, Laboratory of Physical Chemistry, Jan Unsleber",
+    author="ETH Zurich, Department of Chemistry and Applied Biosciences, Jan Unsleber",
     author_email="scine@phys.chem.ethz.ch",
     description="Automated Reaction Templates",
     long_description=readme,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details.
 """
 
@@ -83,7 +83,7 @@ class ReactionTemplateDatabase:
     def find_matching_templates(
         self,
         molecules: List[masm.Molecule],
-        energy_cutoff: float = 300,
+        energy_cutoff: Optional[float] = 300,
         enforce_atom_shapes: bool = True
     ) -> Optional[List[Match]]:
         """Finds all matching reaction templates for a given set of molecules.
@@ -119,11 +119,20 @@ class ReactionTemplateDatabase:
         """
         results = []
         for template in self.__unique_templates:
-            matches = template.determine_all_matches(
-                molecules,
-                energy_cutoff=energy_cutoff,
-                enforce_atom_shapes=enforce_atom_shapes
-            )
+            if energy_cutoff is None:
+                matches = template.determine_all_matches(
+                    molecules,
+                    energy_cutoff=0.0,
+                    enforce_atom_shapes=enforce_atom_shapes,
+                    enforce_lhs=True,
+                    enforce_rhs=True,
+                )
+            else:
+                matches = template.determine_all_matches(
+                    molecules,
+                    energy_cutoff=energy_cutoff,
+                    enforce_atom_shapes=enforce_atom_shapes
+                )
             if matches is not None:
                 results += matches
         if not results:

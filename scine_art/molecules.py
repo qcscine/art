@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details.
 """
 
@@ -549,7 +549,7 @@ def __fragment_recursion(
     if m1_indices is None:
         m1_indices = list(range(m1.graph.V))
     assert min_fragment_size > 0
-    if m1.graph.V < min_fragment_size:
+    if (m1.graph.V-1) < min_fragment_size:
         return [], [], []
     for i in range(m1.graph.V):
         new_molecule = copy(m1)
@@ -567,7 +567,7 @@ def __fragment_recursion(
                 continue
         else:
             reduced_molecule_cache[sum_formula] = []
-        if new_molecule.graph.E < m2.graph.E and len(new_molecule.graph.cycles) < len(m2.graph.cycles):
+        if new_molecule.graph.E <= m2.graph.E and len(new_molecule.graph.cycles) <= len(m2.graph.cycles):
             new_m2_matches = masm_complete_graph_match(new_molecule, m2)
         else:
             new_m2_matches = []
@@ -586,14 +586,23 @@ def __fragment_recursion(
                 mol,
                 m2,
                 find_all=find_all,
+                min_fragment_size=min_fragment_size,
                 m1_indices=indices,
                 reduced_molecule_cache=reduced_molecule_cache,
                 matching_m2_index_cache=matching_m2_index_cache,
                 full_m1=full_m1
             )
+            if not find_all and mol_results:
+                min_fragment_size = max(mol_results[0].graph.V, min_fragment_size)
             matching_fragments += mol_results
             matching_m1_indices += m1_results
             matching_m2_indices += m2_results
+        if not find_all and matching_fragments:
+            for i in reversed(range(len(matching_fragments))):
+                if matching_fragments[i].graph.V < min_fragment_size:
+                    matching_fragments.pop(i)
+                    matching_m1_indices.pop(i)
+                    matching_m2_indices.pop(i)
     return matching_fragments, matching_m1_indices, matching_m2_indices
 
 

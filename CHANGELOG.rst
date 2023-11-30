@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Release 2.0.0
+-------------
+
+- Allow None as energy cutoff
+- Update address in license
+
 Release 1.0.0
 -------------
 

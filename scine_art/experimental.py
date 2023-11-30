@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details.
 """
 
@@ -14,13 +14,14 @@ from scine_art.molecules import (
     mol_from_subgraph_indices,
 )
 
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Optional
 from copy import copy
 
 
 def map_reaction_from_molecules_direct(
     lhs: List[masm.Molecule],
-    rhs: List[masm.Molecule]
+    rhs: List[masm.Molecule],
+    known_atom_mappings: Optional[List[Tuple[int, int]]] = None
 ) -> Tuple[List[List[Tuple[int, int]]], List[List[Tuple[int, int]]]]:
     """Tries to match each atom in the molecules of the left-hand side to
     exactly one atom on the right-hand side.
@@ -39,6 +40,10 @@ def map_reaction_from_molecules_direct(
         A list of molecules on the left-hand side of the matching.
     rhs : List[masm.Molecule]
         A list of molecules on the right-hand side of the matching.
+    known_atom_mappings : Optional[List[Tuple[int, int]]]
+        A list of atom mappings that have to be respected. The atoms are
+        indexed on a continuous scale in order of the atoms in the molecules
+        given.
 
     Returns
     -------
@@ -96,6 +101,18 @@ def map_reaction_from_molecules_direct(
                                 [l_map[x] for x in range(fragment.graph.V)],
                                 [r_map[x] for x in range(fragment.graph.V)]
                             ))
+        if known_atom_mappings is not None:
+            reduced_mappings = []
+            known_lhs_indices = [x[0] for x in known_atom_mappings]
+            for m in mappings:
+                bad_pairing = False
+                for pairing in m[0]:
+                    if pairing[0] in known_lhs_indices and pairing not in known_atom_mappings:
+                        bad_pairing = True
+                        break
+                if not bad_pairing:
+                    reduced_mappings.append(m)
+            return reduced_mappings
         return mappings
 
     # Start building a mapping from fragments to the 'continuous-LHS'
@@ -148,13 +165,6 @@ def map_reaction_from_molecules_direct(
         def is_overlapping(fragment_info):
             return bool(set(l_blocked) & set(fragment_info[1])) or bool(set(r_blocked) & set(fragment_info[2]))
         remaining_mappings[:] = [x for x in remaining_mappings if not is_overlapping(x)]
-    from scine_art.io import write_molecule_to_svg
-    for i, r in enumerate(rhs):
-        write_molecule_to_svg(f'rhs-{i:03d}.svg', r)
-    for i, l in enumerate(lhs):
-        write_molecule_to_svg(f'lhs-{i:03d}.svg', l)
-    for i, u in enumerate(used):
-        write_molecule_to_svg(f'used-{i:03d}.svg', u[3])
     assert len(l_blocked) == n_atoms
 
     # Prepare the final output, for each atom in each molecule, generate
@@ -192,7 +202,8 @@ def map_reaction_from_molecules_direct(
 
 def map_reaction_from_molecules_cached(
     lhs: List[masm.Molecule],
-    rhs: List[masm.Molecule]
+    rhs: List[masm.Molecule],
+    known_atom_mappings: Optional[List[Tuple[int, int]]] = None
 ) -> Tuple[List[List[Tuple[int, int]]], List[List[Tuple[int, int]]]]:
     """Tries to match each atom in the molecules of the left-hand side to
     exactly one atom on the right-hand side.
@@ -211,6 +222,10 @@ def map_reaction_from_molecules_cached(
         A list of molecules on the left-hand side of the matching.
     rhs : List[masm.Molecule]
         A list of molecules on the right-hand side of the matching.
+    known_atom_mappings : Optional[List[Tuple[int, int]]]
+        A list of atom mappings that have to be respected. The atoms are
+        indexed on a continuous scale in order of the atoms in the molecules
+        given.
 
     Returns
     -------
@@ -257,7 +272,19 @@ def map_reaction_from_molecules_cached(
     #  2. Remove all fragments that overlap with it or the now blocked
     #     indices in the 'continuous-LHS' indices
     #  3. Repeat 1. until no fragments and/or 'continuous-LHS' indices are free
-    remaining_mappings = copy(mappings)
+    if known_atom_mappings is not None:
+        remaining_mappings = []
+        known_lhs_indices = [x[0] for x in known_atom_mappings]
+        for m in mappings:
+            bad_pairing = False
+            for pairing in m[0]:
+                if pairing[0] in known_lhs_indices and pairing not in known_atom_mappings:
+                    bad_pairing = True
+                    break
+            if not bad_pairing:
+                remaining_mappings.append(m)
+    else:
+        remaining_mappings = copy(mappings)
     starters = []
     # TODO try multiple times, here? (loop)
     starters.append(max(remaining_mappings, key=lambda x: len(x[0])))
@@ -275,14 +302,10 @@ def map_reaction_from_molecules_cached(
         def is_overlapping(fragment_info):
             return bool(set(l_blocked) & set(fragment_info[1])) or bool(set(r_blocked) & set(fragment_info[2]))
         remaining_mappings[:] = [x for x in remaining_mappings if not is_overlapping(x)]
-    from scine_art.io import write_molecule_to_svg
-    for i, r in enumerate(rhs):
-        write_molecule_to_svg(f'rhs-{i:03d}.svg', r)
-    for i, l in enumerate(lhs):
-        write_molecule_to_svg(f'lhs-{i:03d}.svg', l)
-    for i, u in enumerate(used):
-        write_molecule_to_svg(f'used-{i:03d}.svg', u[3])
-    assert len(l_blocked) == n_atoms
+    if len(l_blocked) != n_atoms:
+        raise RuntimeError(
+            'Could not complete atom mapping across reaction. Check "known_atom_mappings" if any were given.'
+        )
 
     # Prepare the final output, for each atom in each molecule, generate
     #  a tuple pointing at a molecule and an atom within it on the other

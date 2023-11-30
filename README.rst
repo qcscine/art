@@ -71,12 +71,13 @@ How to Cite
 -----------
 
 When publishing results obtained with Art, please cite the corresponding
-release as archived on Zenodo (please use the DOI of the respective release).
+release as archived on `Zenodo <https://zenodo.org/doi/10.5281/zenodo.7928113>`_
+(please use the DOI of the respective release).
 
 In addition, we kindly request you to cite the following article when using Art:
 
 J. P. Unsleber, "Accelerating Reaction Network Explorations with Automated Reaction
-Template Extraction and Application", ChemRxiv, 2023, DOI 10.26434/chemrxiv-2023-lgnrm.
+Template Extraction and Application", *J. Chem. Inf. Model.*, **2023**, *63*, 3392.
 
 Support and Contact
 -------------------

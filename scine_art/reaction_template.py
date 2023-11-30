@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 __copyright__ = """ This code is licensed under the 3-clause BSD license.
-Copyright ETH Zurich, Laboratory of Physical Chemistry, Reiher Group.
+Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Group.
 See LICENSE.txt for details.
 """
 
@@ -218,10 +218,12 @@ class ReactionTemplate:
         self.nucleus: SideContainer[List[List[masm.Molecule]]] = deepcopy(fragments['minimal'])
         self.lhs_rhs_mapping: SideContainer[SideConversionTree] = deepcopy(lhs_rhs_mappings['minimal'])
         # Expandable members
-        self.shelled_nuclei = SideContainer[List[List[List[masm.Molecule]]]](
-            [deepcopy(fragments['minimal_shell']['lhs'])],
-            [deepcopy(fragments['minimal_shell']['rhs'])]
-        )
+        if fragments.minimal_shell is not None:
+            self.shelled_nuclei = SideContainer[List[List[List[masm.Molecule]]]](
+                [deepcopy(fragments['minimal_shell']['lhs'])],
+                [deepcopy(fragments['minimal_shell']['rhs'])]
+            )
+            assert len(self.shelled_nuclei['lhs']) == len(self.shelled_nuclei['rhs'])
         self.shapes = SideContainer[List[ShapesByMoFrAt]](
             [deepcopy(shapes['minimal']['lhs'])],
             [deepcopy(shapes['minimal']['rhs'])]
@@ -236,7 +238,6 @@ class ReactionTemplate:
         self.known_elementary_steps: Set[Tuple[str, bool]] = set()
         if elementary_step_id:
             self.known_elementary_steps.update(((elementary_step_id, False), ))
-        assert len(self.shelled_nuclei['lhs']) == len(self.shelled_nuclei['rhs'])
         assert len(self.shapes['lhs']) == len(self.shapes['rhs'])
         # Compute bond changes for minimal template version
         self.bond_changes: BondChangesContainer = {
@@ -1125,6 +1126,7 @@ class ReactionTemplate:
         RuntimeError
             If the template types requested are not available.
         """
+        template_types = ['minimal']
         if additional_template_types is not None:
             template_types = ['minimal'] + additional_template_types
             for key in additional_template_types:
