@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 2.0.1
+-------------
+
+- Add reference to SCINE review article to README
+
 Release 2.0.0
 -------------
 

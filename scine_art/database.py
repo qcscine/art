@@ -355,7 +355,7 @@ class ReactionTemplateDatabase:
             shifts = [0]
             for s in (svgs[0:-1]):
                 shifts.append(shifts[-1]+s.width)
-                if len(shifts) == middle+1:
+                if len(shifts) == middle+1:  # pylint: disable=possibly-used-before-assignment
                     shifts[-1] += 100
             for i, s in enumerate(svgs):
                 s.move(shifts[i], (max_height-s.height)/2)

@@ -79,6 +79,13 @@ In addition, we kindly request you to cite the following article when using Art:
 J. P. Unsleber, "Accelerating Reaction Network Explorations with Automated Reaction
 Template Extraction and Application", *J. Chem. Inf. Model.*, **2023**, *63*, 3392.
 
+Furthermore, when publishing results obtained with any SCINE module, please cite the following paper:
+
+T. Weymuth, J. P. Unsleber, P. L. Türtscher, M. Steiner, J.-G. Sobez, C. H. Müller, M. Mörchen,
+V. Klasovita, S. A. Grimmel, M. Eckhoff, K.-S. Csizi, F. Bosia, M. Bensberg, M. Reiher,
+"SCINE—Software for chemical interaction networks", *J. Chem. Phys.*, **2024**, *160*, 222501
+(DOI `10.1063/5.0206974 <https://doi.org/10.1063/5.0206974>`_).
+
 Support and Contact
 -------------------
 
