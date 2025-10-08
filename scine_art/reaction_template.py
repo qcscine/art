@@ -240,16 +240,7 @@ class ReactionTemplate:
             self.known_elementary_steps.update(((elementary_step_id, False), ))
         assert len(self.shapes['lhs']) == len(self.shapes['rhs'])
         # Compute bond changes for minimal template version
-        self.bond_changes: BondChangesContainer = {
-            'lhs': {
-                'assos': [],
-                'dissos': []
-            },
-            'rhs': {
-                'assos': [],
-                'dissos': []
-            }
-        }
+        self.bond_changes = BondChangesContainer(AssosDissos([], []), AssosDissos([], []))
         for side in ['lhs', 'rhs']:
             other = 'lhs' if side == 'rhs' else 'rhs'
             for mol_idx, (t_mol, t_mol_maps) in enumerate(zip(self.nucleus[side], self.lhs_rhs_mapping[side])):

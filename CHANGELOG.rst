@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Release 2.1.0
+-------------
+
+- Add usage example
+
 Release 2.0.1
 -------------
 

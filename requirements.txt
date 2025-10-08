@@ -1,5 +1,5 @@
-scine_molassembler==3.0.0
-scine_utilities==10.0.0
+scine_molassembler
+scine_utilities
 svgutils
 networkx
 numpy

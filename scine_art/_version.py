@@ -5,4 +5,4 @@ Copyright ETH Zurich, Department of Chemistry and Applied Biosciences, Reiher Gr
 See LICENSE.txt for details.
 """
 
-__version__ = "2.0.1"
+__version__ = "2.1.0"
